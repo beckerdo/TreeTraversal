@@ -2,6 +2,9 @@ package info.danbecker.tree;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.cli.BasicParser;
@@ -24,6 +27,16 @@ public class TreeTraversal {
 	public static boolean debug = false;
 	
     protected static Properties properties;
+
+    protected static Random random = new Random();
+    
+    public static int numKeys;
+    public static int nodeReadCost;
+    public static int nodeDataSize;
+    public static int nodeKeySize;
+    public static int nodeEmptySize;
+    public static int treeFillPercent;
+    public static int numAccesses;
 
 	protected static Logger logger = LoggerFactory.getLogger(TreeTraversal.class);
     
@@ -83,10 +96,40 @@ public class TreeTraversal {
 	}
 
 	public static void execute() {
-		System.out.println( "Key numbers=" + properties.getProperty( "number_keys"));
-		System.out.println( "Node read cost=" + properties.getProperty( "node_read_cost"));
-		System.out.println( "Node data size=" + properties.getProperty( "node_data_size"));
-		System.out.println( "Node key size=" + properties.getProperty( "node_key_size"));
+		numKeys = Integer.parseInt( properties.getProperty( "number_keys"));
+	    nodeReadCost = Integer.parseInt( properties.getProperty( "node_read_cost"));
+	    nodeDataSize = Integer.parseInt( properties.getProperty( "node_data_size"));
+	    nodeKeySize = Integer.parseInt( properties.getProperty( "node_key_size"));
+	    nodeEmptySize = Integer.parseInt( properties.getProperty( "node_empty_size"));
+	    treeFillPercent = Integer.parseInt( properties.getProperty( "tree_fill_percent"));
+	    numAccesses = Integer.parseInt( properties.getProperty( "number_accesses"));
+
+	    System.out.println( "Application inputs:");
+		System.out.println( "Number or keys=" + numKeys );
+		System.out.println( "Node read cost=" + nodeReadCost );
+		System.out.println( "Node empty size=" + nodeEmptySize );
+		System.out.println( "Node data size=" + nodeDataSize );
+		System.out.println( "Node key size=" + nodeKeySize );
+		System.out.println( "Tree fill percentage=" + treeFillPercent );
+		System.out.println( "Number of access=" + numAccesses );
+
+		// For this demo, every node will have a key (String) or node data (no string)
+		System.out.println();
+		System.out.println( "Calculated values:");
+		int numNodes = 0;
+		for ( int level = 0; level < numKeys; level++ ) {
+			numNodes += (int) Math.pow( 2.0,  numKeys ); // 2^0 + 2^1 + ... + 2^keys 
+		}
+		System.out.println( "Tree number nodes=" + numNodes  );
+		System.out.println( "Tree empty size=" + numNodes * nodeEmptySize );
+		int popNodes = numNodes * treeFillPercent / 100;
+		System.out.println( "Tree populated nodes=" + popNodes );
+		
+		// For each key, a * represents a  level number. 
+		// A key name represents a 1.
+		// So, for example, key1..key4, there can be 
+		List<String> nodes = new ArrayList<String>( numNodes ); 
+		
 	}
 	
 	// For example, to convert 10 minutes to milliseconds, use: TimeUnit.MILLISECONDS.convert(10L, TimeUnit.MINUTES)
